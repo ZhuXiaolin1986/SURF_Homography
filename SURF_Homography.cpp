@@ -6,6 +6,7 @@
 
 #include "opencv2/opencv_modules.hpp"
 #include <stdio.h>
+#include <time.h>
 
 #ifndef HAVE_OPENCV_NONFREE
 
@@ -147,6 +148,19 @@ int main( int argc, char** argv )
 
   //-- Show detected matches
   show( "Good Matches & Object detection", img_matches );
+
+  Mat warped_image;
+  Size warped_image_size = Size(cvRound(obj_corners[2].x), cvRound(obj_corners[2].y));
+  H = findHomography(scene_corners, obj_corners);
+  warpPerspective(img_scene, warped_image, H, warped_image_size);
+
+  string save_name = argv[2];
+  size_t n = save_name.find_last_of("/", -1);
+  save_name.insert(n+1, "SPLIT_");
+  
+  imwrite(save_name, warped_image);
+
+  show( "Object_in_Scene", warped_image);
 
   waitKey(0);
 
